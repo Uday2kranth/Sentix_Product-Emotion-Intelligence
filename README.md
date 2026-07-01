@@ -203,9 +203,35 @@ An academic R programming pipeline is provided in the `Rogramming for eda and da
 The platform has been enhanced with server-side Python data visualization generators integrated directly into the batch stats workflow.
 
 ### Key Visualization Features:
-* **Feature Distributions**: Histogram grid showing the distribution of rating stars and sentiment polarity scores.
-* **Correlation Heatmap**: Visual matrix showing Pearson correlation coefficients between key numeric attributes (`Rating`, `True Polarity`, `Day Diff`, `Helpful Yes`, `Pred Sentiment`).
-* **ML Confusion Matrix**: Confusion matrix comparing true sentiment labels vs predicted sentiment classifications.
+* **Feature Distributions**: Histogram grid showing the distribution of rating stars and sentiment polarity scores. Automatically falls back to plotting predicted sentiment distributions if true polarity data isn't present in the dataset.
+* **Correlation Heatmap**: Visual matrix showing Pearson correlation coefficients between numeric attributes (`Rating`, `True Polarity`, `Day Diff`, `Helpful Yes`, `Pred Sentiment`). Uses Pandas DataFrame alignment to keep rows in sync even with missing properties.
+* **Robust ML Confusion Matrix**: True sentiment vs predicted sentiment matrix. Autodetects ground-truth sentiment labels case-insensitively. If no explicit sentiment column is mapped, it automatically maps review ratings (stars $\ge 4.0$ = Positive, $\le 2.0$ = Negative) to construct the matrix without errors.
 
-These charts are generated dynamically via Matplotlib in the FastAPI backend, returned as Base64-encoded PNG strings, and rendered in the dashboard.
+These charts are generated dynamically via Matplotlib in the FastAPI backend (configured to run headlessly using `Agg`), returned as Base64-encoded PNG strings, and rendered in the dashboard.
+
+---
+
+## 8. Welcome Portal & Usability Features
+
+To enhance user boarding and dashboard usability, several key frontend features were implemented:
+* **Welcome Portal (Landing Page):** Serving as the default view, this tab displays glassmorphic card breakdowns detailing Single Analysis, Batch Processing, EDA Dashboard, and AI Copilot. Direct action buttons allow one-click routing or drawer triggers.
+* **Quick Demo Data Loader:** A single click instantly loads a 5-row realistic e-commerce dataset, configures standard column mappings, and forwards the user to the batch analysis screen for a live demonstration.
+* **Collapsible Sidebar Layout:** Designed for screen real estate optimization, users can toggle the sidebar width down to `92px`. It hides all text descriptions, leaving a centered icon-only layout with browser tooltips on hover.
+
+---
+
+## 9. Production Deployment Architecture (Vercel + Hugging Face)
+
+Sentix is successfully deployed online across two environments, providing 100% uptime for the user interface and containerized hosting for the backend:
+
+### Backend Hosting: Hugging Face Spaces (Docker SDK)
+* **SDK Type:** Docker (running headlessly on port `7860`).
+* **Model Support:** Integrated with OpenRouter API (including support for the free model roulette endpoint `openrouter/free`).
+* **Deployment Repository:** `https://huggingface.co/spaces/uday62/sentix-backend`
+
+### Frontend Hosting: Vercel (Static Web App)
+* **Framework Preset:** Vite (configured for the `frontend/` subfolder).
+* **Environment Variable:** `VITE_API_URL` pointing to `https://uday62-sentix-backend.hf.space/api` (direct API path).
+* **Deployment URL:** `https://sentix-product-emotion-intelligence.vercel.app`
+
 
