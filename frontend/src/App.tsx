@@ -167,7 +167,7 @@ function bannerClassName(tone: BannerTone): string {
   }
 }
 
-function TabButton({ item, active, onClick }: { item: NavigationItem; active: boolean; onClick: () => void }) {
+function TabButton({ item, active, onClick, collapsed }: { item: NavigationItem; active: boolean; onClick: () => void; collapsed: boolean }) {
   const Icon = item.icon;
 
   return (
@@ -175,17 +175,21 @@ function TabButton({ item, active, onClick }: { item: NavigationItem; active: bo
       type="button"
       onClick={onClick}
       className={cn(
-        'group flex w-full items-start gap-3 rounded-2xl border px-4 py-3 text-left transition focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-sentix-accent',
-        active ? 'border-sentix-accent bg-sentix-accent/10' : 'border-sentix-border bg-black/20 hover:border-white/20 hover:bg-white/5'
+        'group flex items-center rounded-2xl border transition focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-sentix-accent',
+        active ? 'border-sentix-accent bg-sentix-accent/10' : 'border-sentix-border bg-black/20 hover:border-white/20 hover:bg-white/5',
+        collapsed ? 'w-12 h-12 justify-center p-0' : 'w-full gap-3 px-4 py-3 text-left'
       )}
+      title={collapsed ? item.label : undefined}
     >
-      <span className={cn('mt-0.5 inline-flex h-9 w-9 items-center justify-center rounded-xl border', active ? 'border-sentix-accent bg-sentix-accent text-black' : 'border-sentix-border bg-white/5 text-sentix-text')}>
+      <span className={cn('inline-flex h-9 w-9 shrink-0 items-center justify-center rounded-xl border', active ? 'border-sentix-accent bg-sentix-accent text-black' : 'border-sentix-border bg-white/5 text-sentix-text')}>
         <Icon className="h-4 w-4" />
       </span>
-      <span className="min-w-0 flex-1">
-        <span className="block text-[11px] font-bold uppercase tracking-[0.3em] text-sentix-text">{item.label}</span>
-        <span className="mt-1 block text-xs leading-5 text-sentix-muted">{item.description}</span>
-      </span>
+      {!collapsed && (
+        <span className="min-w-0 flex-1">
+          <span className="block text-[11px] font-bold uppercase tracking-[0.3em] text-sentix-text">{item.label}</span>
+          <span className="mt-1 block text-xs leading-5 text-sentix-muted">{item.description}</span>
+        </span>
+      )}
     </button>
   );
 }
@@ -876,7 +880,7 @@ ${activeScreenCtx}`
 
           <div className={cn('mt-5 space-y-3', sidebarCollapsed && 'items-center')}>
             {NAVIGATION.map((item) => (
-              <TabButton key={item.id} item={item} active={activeTab === item.id} onClick={() => setActiveTab(item.id)} />
+              <TabButton key={item.id} item={item} active={activeTab === item.id} onClick={() => setActiveTab(item.id)} collapsed={sidebarCollapsed} />
             ))}
           </div>
 

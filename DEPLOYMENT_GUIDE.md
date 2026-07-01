@@ -8,11 +8,11 @@ This document tracks our progress in deploying the Sentix application. We will c
   - Deploy the backend codebase to Hugging Face.
 - [x] **Task 3: Verify Hugging Face Backend Status**
   - Verify that the backend is building and running successfully on Hugging Face.
-- [ ] **Task 4: Setup Frontend Deployment on Vercel**
+- [x] **Task 4: Setup Frontend Deployment on Vercel**
   - Import the GitHub repository and configure Vercel settings.
-- [ ] **Task 5: Link Frontend to Hugging Face Backend**
+- [x] **Task 5: Link Frontend to Hugging Face Backend**
   - Configure the `VITE_API_URL` environment variable in Vercel.
-- [ ] **Task 6: Final Integration Verification**
+- [x] **Task 6: Final Integration Verification**
   - Verify that the frontend can successfully communicate with the Hugging Face backend.
 
 ---
