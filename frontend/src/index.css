@@ -1,0 +1,57 @@
+@import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;700;800&display=swap');
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  :root {
+    color-scheme: dark;
+  }
+
+  html {
+    scroll-behavior: smooth;
+  }
+
+  body {
+    @apply min-h-screen bg-sentix-bg font-mono text-sentix-text antialiased;
+    background-image:
+      radial-gradient(circle at top, rgba(0, 255, 136, 0.08), transparent 25%),
+      radial-gradient(circle at 80% 20%, rgba(34, 197, 94, 0.06), transparent 22%),
+      linear-gradient(180deg, #0a0a0a 0%, #090b0f 100%);
+  }
+
+  * {
+    @apply border-sentix-border;
+    box-sizing: border-box;
+  }
+
+  ::selection {
+    background: rgba(0, 255, 136, 0.24);
+    color: #ffffff;
+  }
+
+  ::-webkit-scrollbar {
+    width: 10px;
+    height: 10px;
+  }
+
+  ::-webkit-scrollbar-track {
+    background: rgba(255, 255, 255, 0.03);
+  }
+
+  ::-webkit-scrollbar-thumb {
+    border-radius: 9999px;
+    background: rgba(0, 255, 136, 0.28);
+    border: 2px solid rgba(10, 10, 10, 0.9);
+  }
+}
+
+@layer components {
+  .sentix-grid-overlay {
+    background-image:
+      linear-gradient(rgba(255, 255, 255, 0.025) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(255, 255, 255, 0.025) 1px, transparent 1px);
+    background-size: 42px 42px;
+  }
+}

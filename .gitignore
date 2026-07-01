@@ -1,0 +1,62 @@
+node_modules/
+dist/
+build/
+.vite/
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+.coverage
+coverage/
+
+# IDE and Developer Tools
+.vscode/
+.agents/
+.qodo/
+.Rhistory
+*.tsbuildinfo
+
+# Virtual environments
+.venv/
+venv/
+g/
+__pycache__/
+*.pyc
+
+.env
+.env.*
+frontend/node_modules/
+frontend/dist/
+
+# Nested git repo + large archive (462MB — GitHub rejects >100MB)
+GAGAN/
+GAGAN.zip
+*.rar
+*.zip
+
+
+# Credentials & Gmail OAuth (never commit these)
+token.json
+credentials.json
+sent_emails.log
+
+# Saved ML model files
+*.joblib
+*.pkl
+
+# Document and report formats (not needed for running the app)
+*.docx
+*.pdf
+*.doc
+
+# R local library builds
+r_libs/
+**/r_libs/
+
+# Binary files and compiled extensions
+*.dll
+*.so
+*.dylib
+*.rdb
+*.rdx
+*.exe
+

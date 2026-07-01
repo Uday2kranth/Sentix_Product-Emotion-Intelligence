@@ -1,0 +1,13 @@
+npm run dev 
+y
+npm run dev 
+y
+npm run dev 
+n
+history >> text.txt
+doskey / history
+doskey / history >txt.txt
+dir
+type txt.txt
+type > txt.txt
+doskey /history > history.txt

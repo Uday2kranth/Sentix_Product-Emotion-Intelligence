@@ -1,0 +1,100 @@
+{
+  "version": 1,
+  "skills": {
+    "Framework Orchestrator": {
+      "source": "daffy0208/ai-dev-standards",
+      "sourceType": "github",
+      "computedHash": "4e179557f4486bb5b5f54bf1515ff3556cb43c5c4ace19b1888ed7d6899a4f8d"
+    },
+    "animate": {
+      "source": "pbakaus/impeccable",
+      "sourceType": "github",
+      "computedHash": "354414a934957f9d54a71468abe81888304d35b47a4fe8e27fff08f60b457d53"
+    },
+    "building-components": {
+      "source": "vercel/components.build",
+      "sourceType": "github",
+      "computedHash": "20889af7cb9b3abca1e38824f7fffaa873eb0cc4d45187967b97bd85462cf934"
+    },
+    "component-architecture": {
+      "source": "mgd34msu/goodvibes-plugin",
+      "sourceType": "github",
+      "computedHash": "f90b821c35ed5c8975e20dcb9497eaf001195db5842fd52369b027c6f529c92e"
+    },
+    "context-management": {
+      "source": "dralgorhythm/claude-agentic-framework",
+      "sourceType": "github",
+      "computedHash": "3d425c4867d32a5bd7ed53d8f4b1ce03588d4b218df290f7aac3e393c0ff78ef"
+    },
+    "design": {
+      "source": "howells/arc",
+      "sourceType": "github",
+      "computedHash": "f1aaceec3e6bc71b19fd565892090cd87b0fb124ab83b2cb94708349c7197798"
+    },
+    "design-expert": {
+      "source": "nguyenthienthanh/aura-frog",
+      "sourceType": "github",
+      "computedHash": "4639c9fcdbbc24211d6854139f1074d83a2e2f40aef6333fef3d1760dbc773e8"
+    },
+    "design-guide": {
+      "source": "paperclipai/paperclip",
+      "sourceType": "github",
+      "computedHash": "98ac5d4eba74071a9a1199a27a5c6453a755a1f1faaefe31d787985e4863ea6e"
+    },
+    "design-mastery": {
+      "source": "wasintoh/toh-framework",
+      "sourceType": "github",
+      "computedHash": "98bcc0abeb7a9c9de9c19d75fae39098496fb85e058844a8b9c69538c55b5284"
+    },
+    "editorial": {
+      "source": "bergside/awesome-design-md-skills",
+      "sourceType": "github",
+      "computedHash": "4c69a365c5eebec7fdcbd1357a5a37b384e00c87d0a3bfc8c151e8fecbde9bc2"
+    },
+    "futuristic": {
+      "source": "bergside/awesome-design-md-skills",
+      "sourceType": "github",
+      "computedHash": "0fa92af53976c1fff4af783b260664c9140624199959745b68dfbebb48853615"
+    },
+    "layout": {
+      "source": "pbakaus/impeccable",
+      "sourceType": "github",
+      "computedHash": "6b5fd49587616ca1e594e9c6b11bc1cef5eb0b2d137c307de54a8a650770f4ce"
+    },
+    "mcp-builder": {
+      "source": "anthropics/skills",
+      "sourceType": "github",
+      "computedHash": "fc68038c900eb801f73ff96130c9f9dba533cc94212ed8435833242f196dedcf"
+    },
+    "pptx": {
+      "source": "anthropics/skills",
+      "sourceType": "github",
+      "computedHash": "6b8b859d26f93aa059c9870d1ab76b44ab69e3d6757ce4a03cc94cb760888073"
+    },
+    "prompt-engineer": {
+      "source": "davila7/claude-code-templates",
+      "sourceType": "github",
+      "computedHash": "2c7d393797a6a9838a344ac8cc152374227ffcc3f90fd3d75c0bc7c1ebb99fce"
+    },
+    "refined": {
+      "source": "bergside/awesome-design-md-skills",
+      "sourceType": "github",
+      "computedHash": "f3dc7bf05686edc985da983e2cde2c9c47ba0c163fc0b6d10c366ed1b3c3bf5a"
+    },
+    "tech-stack-evaluator": {
+      "source": "matteocervelli/llms",
+      "sourceType": "github",
+      "computedHash": "51574f6f27b41dc927176dbbdbc026a126ed63186647b32df27018eae7b9a4a6"
+    },
+    "test-driven-development": {
+      "source": "obra/superpowers",
+      "sourceType": "github",
+      "computedHash": "126f1ebf6ccd414f42544f6e83d8cc5adb089e1108eaffb7c400701e37eecd9f"
+    },
+    "vercel-composition-patterns": {
+      "source": "vercel-labs/agent-skills",
+      "sourceType": "github",
+      "computedHash": "575757e3e25761c8c562d6e395d29f0b76c98b1273c0bd72d88e6ab1bc9c7d42"
+    }
+  }
+}
