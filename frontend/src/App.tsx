@@ -15,7 +15,12 @@ import {
   Settings,
   ShieldCheck,
   Sparkles,
-  Wand2
+  Wand2,
+  Compass,
+  Home,
+  Play,
+  HelpCircle,
+  BookOpen
 } from 'lucide-react';
 import { useEffect, useMemo, useState, type ComponentType } from 'react';
 
@@ -28,7 +33,7 @@ import { ApiError, analyzeBatchStream, analyzeSingle, suggestColumns, sendChatMe
 import { emotionOrder, type AnalysisResult, type BatchItem, type BatchProgress, type ColumnMapping, type DatasetRow, type EmotionName, type HistoryEntry, type TopicCluster, type ForecastPoint, type BatchStatsResponse } from './types';
 
 
-type TabKey = 'single' | 'batch' | 'eda' | 'history';
+type TabKey = 'welcome' | 'single' | 'batch' | 'eda' | 'history';
 type BannerTone = 'success' | 'error' | 'warning' | 'info';
 type SentimentFilter = 'all' | 'positive' | 'neutral' | 'negative';
 
@@ -45,6 +50,7 @@ interface NavigationItem {
 }
 
 const NAVIGATION: NavigationItem[] = [
+  { id: 'welcome', label: 'Welcome Portal', description: 'Quick-start guide & features overview.', icon: Compass },
   { id: 'single', label: 'Single Analysis', description: 'Inspect one review in depth.', icon: Sparkles },
   { id: 'batch', label: 'Batch Analysis', description: 'Upload a dataset and map columns.', icon: Database },
   { id: 'eda', label: 'EDA Dashboard', description: 'Visual distributions, correlations, and matrices.', icon: LayoutDashboard },
@@ -338,7 +344,7 @@ function EmptyState({ title, subtitle, icon: Icon }: { title: string; subtitle: 
 }
 
 export default function App() {
-  const [activeTab, setActiveTab] = useState<TabKey>('single');
+  const [activeTab, setActiveTab] = useState<TabKey>('welcome');
   const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
   const [inputText, setInputText] = useState('');
   const [results, setResults] = useState<AnalysisResult[]>([]);
@@ -729,6 +735,29 @@ ${activeScreenCtx}`
     setBanner({ tone: 'info', message: 'Batch workspace cleared.' });
   }
 
+  function handleLoadSample() {
+    const sampleRows = [
+      { id: "row-1", productName: "MicroSDXC Ultra 64GB", brand: "SanDisk", modelNumber: "SDSDQUA-064G", reviewText: "The read speed is fantastic, but it failed after 3 months of usage. Very disappointed.", overall: 2.0, day_diff: 10, helpful_yes: 15, Polarity: -0.3 },
+      { id: "row-2", productName: "MicroSDXC Ultra 64GB", brand: "SanDisk", modelNumber: "SDSDQUA-064G", reviewText: "This memory card works perfectly in my Galaxy S4! Plenty of space for HD video.", overall: 5.0, day_diff: 12, helpful_yes: 8, Polarity: 0.8 },
+      { id: "row-3", productName: "MicroSDXC Ultra 64GB", brand: "SanDisk", modelNumber: "SDSDQUA-064G", reviewText: "Average performance. Speeds are standard, nothing exceptional. Standard value.", overall: 3.0, day_diff: 15, helpful_yes: 2, Polarity: 0.0 },
+      { id: "row-4", productName: "MicroSDXC Ultra 64GB", brand: "SanDisk", modelNumber: "SDSDQUA-064G", reviewText: "Extremely fast, reliable card. SanDisk has always been my go-to brand.", overall: 5.0, day_diff: 8, helpful_yes: 22, Polarity: 0.9 },
+      { id: "row-5", productName: "MicroSDXC Ultra 64GB", brand: "SanDisk", modelNumber: "SDSDQUA-064G", reviewText: "Do not buy this! It was not recognized by my device out of the box.", overall: 1.0, day_diff: 20, helpful_yes: 5, Polarity: -0.8 }
+    ];
+    setUploadedData(sampleRows);
+    setUploadedFileName('sample_reviews.csv');
+    const mapping = {
+      reviewColumn: 'reviewText',
+      productName: 'productName',
+      brand: 'brand',
+      modelNumber: 'modelNumber'
+    };
+    setColumnMapping(mapping);
+    const mapped = buildMappedBatch(sampleRows, mapping);
+    setMappedBatch(mapped);
+    setActiveTab('batch');
+    setBanner({ tone: 'success', message: 'Sample e-commerce dataset loaded! Review the column mapping below and click "Start Analysis".' });
+  }
+
   async function handleBatchAnalyze() {
     const batch = mappedBatch;
 
@@ -921,7 +950,105 @@ ${activeScreenCtx}`
             <motion.div key={activeTab} variants={ROOT_VARIANTS} initial="initial" animate="animate" exit="exit" className="space-y-5">
               <Banner banner={banner} onClear={() => setBanner(null)} />
 
-              {activeTab === 'single' ? (
+              {activeTab === 'welcome' ? (
+                <section className="grid gap-5">
+                  <Panel
+                    title="Welcome to Sentix Portal"
+                    subtitle="Learn how to navigate, analyze reviews, and work with your AI assistant."
+                  >
+                    <div className="space-y-6">
+                      <div className="rounded-2xl bg-gradient-to-br from-sentix-accent/20 to-emerald-500/10 p-5 border border-sentix-accent/20">
+                        <h3 className="text-sm font-bold uppercase tracking-[0.25em] text-sentix-text flex items-center gap-2">
+                          <Compass className="h-5 w-5 text-sentix-accent" />
+                          Overview of Features
+                        </h3>
+                        <p className="mt-3 text-sm leading-relaxed text-sentix-muted">
+                          Sentix is a sophisticated web application designed for deep emotional and sentiment analysis of product reviews. The system uses a hybrid natural language processing engine (combining machine learning models, custom lexicons, and dictionary-based scoring) to parse reviews and extract detailed insights.
+                        </p>
+                      </div>
+
+                      <div className="grid gap-4 md:grid-cols-2">
+                        {/* Single Analysis Card */}
+                        <div className="group relative rounded-2xl border border-sentix-border bg-black/40 p-5 transition hover:border-sentix-accent/40 hover:bg-black/60">
+                          <div className="flex items-center gap-3">
+                            <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-sentix-accent/10 text-sentix-accent group-hover:scale-110 transition">
+                              <Sparkles className="h-5 w-5" />
+                            </div>
+                            <h4 className="font-bold text-sentix-text">Single Review Analysis</h4>
+                          </div>
+                          <p className="mt-3 text-xs leading-relaxed text-sentix-muted">
+                            Type or paste a product feedback text. The hybrid NLP engine extracts sentiment polarity scores and tracks 6 core emotions (Joy, Love, Surprise, Anger, Fear, Sadness) along with auto-generated keywords and summaries.
+                          </p>
+                          <Button variant="secondary" className="mt-4 w-full justify-center" onClick={() => setActiveTab('single')}>
+                            Launch Single Analysis
+                          </Button>
+                        </div>
+
+                        {/* Batch Analysis Card */}
+                        <div className="group relative rounded-2xl border border-sentix-border bg-black/40 p-5 transition hover:border-sentix-accent/40 hover:bg-black/60">
+                          <div className="flex items-center gap-3">
+                            <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-sentix-accent/10 text-sentix-accent group-hover:scale-110 transition">
+                              <Database className="h-5 w-5" />
+                            </div>
+                            <h4 className="font-bold text-sentix-text">Batch Dataset Processing</h4>
+                          </div>
+                          <p className="mt-3 text-xs leading-relaxed text-sentix-muted">
+                            Upload a spreadsheet/CSV containing hundreds of rows of feedback. Map columns dynamically (via LLM suggestion or manual selection) and stream results in real time.
+                          </p>
+                          <Button variant="secondary" className="mt-4 w-full justify-center" onClick={() => setActiveTab('batch')}>
+                            Launch Batch Analysis
+                          </Button>
+                        </div>
+
+                        {/* EDA Dashboard Card */}
+                        <div className="group relative rounded-2xl border border-sentix-border bg-black/40 p-5 transition hover:border-sentix-accent/40 hover:bg-black/60">
+                          <div className="flex items-center gap-3">
+                            <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-sentix-accent/10 text-sentix-accent group-hover:scale-110 transition">
+                              <LayoutDashboard className="h-5 w-5" />
+                            </div>
+                            <h4 className="font-bold text-sentix-text">EDA & Performance Analytics</h4>
+                          </div>
+                          <p className="mt-3 text-xs leading-relaxed text-sentix-muted">
+                            Inspect rating star distributions, numeric feature correlation heatmaps, and supervised machine learning performance analyses (such as confusion matrices against ground truth).
+                          </p>
+                          <Button variant="secondary" className="mt-4 w-full justify-center" onClick={() => setActiveTab('eda')}>
+                            Open EDA Dashboard
+                          </Button>
+                        </div>
+
+                        {/* AI Copilot Card */}
+                        <div className="group relative rounded-2xl border border-sentix-border bg-black/40 p-5 transition hover:border-sentix-accent/40 hover:bg-black/60">
+                          <div className="flex items-center gap-3">
+                            <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-sentix-accent/10 text-sentix-accent group-hover:scale-110 transition">
+                              <Brain className="h-5 w-5" />
+                            </div>
+                            <h4 className="font-bold text-sentix-text">AI Copilot & Recommendations</h4>
+                          </div>
+                          <p className="mt-3 text-xs leading-relaxed text-sentix-muted">
+                            Discuss the results of your current batch analysis or single review with the AI Copilot. Ask it for business advice, such as whether to keep, improve, or drop specific product lineups.
+                          </p>
+                          <Button variant="secondary" className="mt-4 w-full justify-center" onClick={() => setChatOpen(true)}>
+                            Open AI Copilot Chat
+                          </Button>
+                        </div>
+                      </div>
+
+                      <div className="rounded-2xl border border-sentix-border bg-black/20 p-5 space-y-4">
+                        <h4 className="text-xs font-bold uppercase tracking-[0.2em] text-sentix-text flex items-center gap-2">
+                          <Play className="h-4 w-4 text-sentix-accent" />
+                          Quick Demo: Load Sample Data
+                        </h4>
+                        <p className="text-xs leading-relaxed text-sentix-muted">
+                          Don't have a dataset ready? Click the button below to load a sample e-commerce review dataset into the workspace. It will automatically configure column mappings for you, and you can instantly run the analysis and examine the dashboard.
+                        </p>
+                        <Button className="w-full justify-center bg-gradient-to-br from-sentix-accent to-emerald-500 text-black hover:opacity-90" onClick={handleLoadSample}>
+                          Load Sample Dataset & Open Batch Tab
+                        </Button>
+                      </div>
+                    </div>
+                  </Panel>
+                </section>
+              ) : activeTab === 'single' ? (
                 <section className="grid gap-5 xl:grid-cols-[1.05fr_0.95fr]">
                   <Panel
                     title="Single Analysis"

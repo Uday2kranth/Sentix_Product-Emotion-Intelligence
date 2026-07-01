@@ -4,9 +4,9 @@ This document tracks our progress in deploying the Sentix application. We will c
 
 - [x] **Task 1: Resolve the Hugging Face Git Rejection Error**
   - Solve the `[rejected] main -> main (fetch first)` error when pushing to Hugging Face.
-- [ ] **Task 2: Push code to Hugging Face Space**
+- [x] **Task 2: Push code to Hugging Face Space**
   - Deploy the backend codebase to Hugging Face.
-- [ ] **Task 3: Verify Hugging Face Backend Status**
+- [x] **Task 3: Verify Hugging Face Backend Status**
   - Verify that the backend is building and running successfully on Hugging Face.
 - [ ] **Task 4: Setup Frontend Deployment on Vercel**
   - Import the GitHub repository and configure Vercel settings.

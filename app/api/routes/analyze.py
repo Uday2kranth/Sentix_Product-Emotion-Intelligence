@@ -27,63 +27,109 @@ def generate_eda_visualizations(results: list) -> dict[str, str]:
     if not results:
         return plots
 
-    ratings = []
-    day_diffs = []
-    helpful_yes = []
-    total_votes = []
-    polarities = []
-    true_sentiments = []
-    pred_sentiments = []
+    # Build aligned data using a pandas DataFrame
+    data_rows = []
+    y_true = []
+    y_pred = []
 
     for r in results:
         meta = r.metadata or {}
-        # Safely extract numeric fields
-        try:
-            rat_val = meta.get("overall") or meta.get("Rating")
-            if rat_val is not None:
-                ratings.append(float(rat_val))
-        except Exception:
-            pass
+        row_data = {}
+        
+        # 1. Rating
+        rat_val = None
+        for key in ["overall", "rating", "Rating", "stars", "score"]:
+            found_key = next((k for k in meta.keys() if k.lower() == key.lower()), None)
+            if found_key:
+                rat_val = meta[found_key]
+                break
+        if rat_val is not None:
+            try:
+                row_data["Rating"] = float(rat_val)
+            except Exception:
+                pass
+                
+        # 2. Day Diff
+        dd_val = None
+        for key in ["day_diff", "daydiff", "days"]:
+            found_key = next((k for k in meta.keys() if k.lower() == key.lower()), None)
+            if found_key:
+                dd_val = meta[found_key]
+                break
+        if dd_val is not None:
+            try:
+                row_data["Day Diff"] = float(dd_val)
+            except Exception:
+                pass
+                
+        # 3. Helpful Yes
+        hy_val = None
+        for key in ["helpful_yes", "helpful", "likes", "votes"]:
+            found_key = next((k for k in meta.keys() if k.lower() == key.lower()), None)
+            if found_key:
+                hy_val = meta[found_key]
+                break
+        if hy_val is not None:
+            try:
+                row_data["Helpful Yes"] = float(hy_val)
+            except Exception:
+                pass
 
-        try:
-            dd_val = meta.get("day_diff")
-            if dd_val is not None:
-                day_diffs.append(float(dd_val))
-        except Exception:
-            pass
+        # 4. Polarity
+        pol_val = None
+        for key in ["polarity", "Polarity", "sentiment_score", "score"]:
+            found_key = next((k for k in meta.keys() if k.lower() == key.lower()), None)
+            if found_key:
+                pol_val = meta[found_key]
+                break
+        if pol_val is not None:
+            try:
+                row_data["True Polarity"] = float(pol_val)
+            except Exception:
+                pass
+                
+        # 5. Predicted Sentiment
+        row_data["Pred Sentiment"] = float(r.sentiment)
+        data_rows.append(row_data)
 
-        try:
-            hy_val = meta.get("helpful_yes")
-            if hy_val is not None:
-                helpful_yes.append(float(hy_val))
-        except Exception:
-            pass
+        # Extraction for Confusion Matrix
+        true_s = None
+        for key in ["sentiment", "Sentiment", "sentiment_label", "label", "class", "opinion", "Sentiment_Class", "pred_sentiment"]:
+            found_key = next((k for k in meta.keys() if k.lower() == key.lower()), None)
+            if found_key:
+                true_s = meta[found_key]
+                break
 
-        try:
-            tv_val = meta.get("total_vote")
-            if tv_val is not None:
-                total_votes.append(float(tv_val))
-        except Exception:
-            pass
+        if true_s is None and rat_val is not None:
+            try:
+                val = float(rat_val)
+                if val >= 4.0:
+                    true_s = "Positive"
+                elif val <= 2.0:
+                    true_s = "Negative"
+                else:
+                    true_s = "Neutral"
+            except (ValueError, TypeError):
+                pass
 
-        try:
-            pol_val = meta.get("Polarity")
-            if pol_val is not None:
-                polarities.append(float(pol_val))
-        except Exception:
-            pass
-
-        true_s = meta.get("Sentiment") or meta.get("sentiment")
         if true_s is not None:
-            true_sentiments.append(str(true_s).strip())
+            val_str = str(true_s).strip().lower()
+            if val_str in ["positive", "pos", "1", "1.0", "true", "yes", "good", "high"]:
+                y_true.append(1)
+                y_pred.append(1 if r.sentiment >= 0 else 0)
+            elif val_str in ["negative", "neg", "0", "0.0", "false", "no", "bad", "low"]:
+                y_true.append(0)
+                y_pred.append(1 if r.sentiment >= 0 else 0)
 
-        pred_sentiments.append(r.sentiment)
+    df = pd.DataFrame(data_rows) if data_rows else pd.DataFrame()
 
     # 1. Distribution Plot (Ratings and Polarity)
     try:
         fig, axes = plt.subplots(1, 2, figsize=(10, 4))
+        
         # Left plot: Ratings
-        if ratings:
+        if not df.empty and "Rating" in df.columns and df["Rating"].notna().any():
+            ratings = df["Rating"].dropna().tolist()
             axes[0].hist(ratings, bins=5, color='#00ff88', edgecolor='#14161a', alpha=0.8)
             axes[0].set_title("Distribution of Ratings", color='#e2e8f0', fontsize=12)
             axes[0].set_xlabel("Stars", color='#64748b')
@@ -91,10 +137,17 @@ def generate_eda_visualizations(results: list) -> dict[str, str]:
         else:
             axes[0].text(0.5, 0.5, "No rating data available", color='#64748b', ha='center', va='center')
         
-        # Right plot: Polarity
-        if polarities:
+        # Right plot: Polarity (Use True Polarity if available, otherwise Pred Sentiment)
+        if not df.empty and "True Polarity" in df.columns and df["True Polarity"].notna().any():
+            polarities = df["True Polarity"].dropna().tolist()
             axes[1].hist(polarities, bins=10, color='#38bdf8', edgecolor='#14161a', alpha=0.8)
-            axes[1].set_title("Distribution of Polarity", color='#e2e8f0', fontsize=12)
+            axes[1].set_title("Distribution of Polarity (Ground Truth)", color='#e2e8f0', fontsize=12)
+            axes[1].set_xlabel("Polarity Score", color='#64748b')
+            axes[1].set_ylabel("Count", color='#64748b')
+        elif not df.empty and "Pred Sentiment" in df.columns and df["Pred Sentiment"].notna().any():
+            polarities = df["Pred Sentiment"].dropna().tolist()
+            axes[1].hist(polarities, bins=10, color='#38bdf8', edgecolor='#14161a', alpha=0.8)
+            axes[1].set_title("Distribution of Polarity (Predictions)", color='#e2e8f0', fontsize=12)
             axes[1].set_xlabel("Polarity Score", color='#64748b')
             axes[1].set_ylabel("Count", color='#64748b')
         else:
@@ -122,64 +175,46 @@ def generate_eda_visualizations(results: list) -> dict[str, str]:
 
     # 2. Correlation Heatmap
     try:
-        data_dict = {}
-        if ratings:
-            data_dict["Rating"] = ratings
-        if polarities:
-            data_dict["True Polarity"] = polarities
-        if day_diffs:
-            data_dict["Day Diff"] = day_diffs
-        if helpful_yes:
-            data_dict["Helpful Yes"] = helpful_yes
-        data_dict["Pred Sentiment"] = pred_sentiments
+        if not df.empty:
+            # Drop columns that are completely NaN or have zero variance
+            numeric_df = df.select_dtypes(include=[np.number]).dropna(how='all')
+            # Only keep columns that have at least 2 unique values (variance > 0) to avoid divide by zero in corr
+            valid_cols = [col for col in numeric_df.columns if numeric_df[col].nunique() > 1]
+            
+            if len(valid_cols) >= 2:
+                corr = numeric_df[valid_cols].corr()
 
-        min_len = min(len(v) for v in data_dict.values())
-        if min_len >= 3:
-            aligned_data = {k: v[:min_len] for k, v in data_dict.items()}
-            df = pd.DataFrame(aligned_data)
-            corr = df.corr()
+                fig, ax = plt.subplots(figsize=(6, 5))
+                cax = ax.matshow(corr, cmap='viridis', vmin=-1, vmax=1)
+                fig.colorbar(cax)
 
-            fig, ax = plt.subplots(figsize=(6, 5))
-            cax = ax.matshow(corr, cmap='viridis', vmin=-1, vmax=1)
-            fig.colorbar(cax)
+                ax.set_xticks(np.arange(len(corr.columns)))
+                ax.set_yticks(np.arange(len(corr.columns)))
+                ax.set_xticklabels(corr.columns, rotation=45, ha='left', color='#e2e8f0')
+                ax.set_yticklabels(corr.columns, color='#e2e8f0')
 
-            ax.set_xticks(np.arange(len(corr.columns)))
-            ax.set_yticks(np.arange(len(corr.columns)))
-            ax.set_xticklabels(corr.columns, rotation=45, ha='left', color='#e2e8f0')
-            ax.set_yticklabels(corr.columns, color='#e2e8f0')
+                for i in range(len(corr.columns)):
+                    for j in range(len(corr.columns)):
+                        val = corr.iloc[i, j]
+                        if not np.isnan(val):
+                            ax.text(j, i, f"{val:.2f}", ha='center', va='center', 
+                                    color='black' if abs(val) > 0.5 else 'white', fontweight='bold')
 
-            for i in range(len(corr.columns)):
-                for j in range(len(corr.columns)):
-                    val = corr.iloc[i, j]
-                    ax.text(j, i, f"{val:.2f}", ha='center', va='center', 
-                            color='black' if abs(val) > 0.5 else 'white', fontweight='bold')
+                ax.set_title("Numeric Correlation Matrix", color='#e2e8f0', fontsize=12, pad=20)
+                fig.patch.set_facecolor('#0a0a0a')
+                ax.set_facecolor('#14161a')
+                plt.tight_layout()
 
-            ax.set_title("Numeric Correlation Matrix", color='#e2e8f0', fontsize=12, pad=20)
-            fig.patch.set_facecolor('#0a0a0a')
-            ax.set_facecolor('#14161a')
-            plt.tight_layout()
-
-            buf = io.BytesIO()
-            plt.savefig(buf, format='png', facecolor=fig.get_facecolor(), edgecolor='none', dpi=100)
-            buf.seek(0)
-            plots["correlation_heatmap"] = base64.b64encode(buf.read()).decode('utf-8')
-            plt.close(fig)
+                buf = io.BytesIO()
+                plt.savefig(buf, format='png', facecolor=fig.get_facecolor(), edgecolor='none', dpi=100)
+                buf.seek(0)
+                plots["correlation_heatmap"] = base64.b64encode(buf.read()).decode('utf-8')
+                plt.close(fig)
     except Exception:
         pass
 
     # 3. Confusion Matrix
     try:
-        y_true = []
-        y_pred = []
-        for r in results:
-            meta = r.metadata or {}
-            true_s = meta.get("Sentiment") or meta.get("sentiment")
-            if true_s:
-                true_s = str(true_s).strip().capitalize()
-                if true_s in ["Positive", "Negative"]:
-                    y_true.append(1 if true_s == "Positive" else 0)
-                    y_pred.append(1 if r.sentiment >= 0 else 0)
-
         if len(y_true) > 0:
             tp = sum(1 for t, p in zip(y_true, y_pred) if t == 1 and p == 1)
             fp = sum(1 for t, p in zip(y_true, y_pred) if t == 0 and p == 1)
@@ -214,7 +249,7 @@ def generate_eda_visualizations(results: list) -> dict[str, str]:
             plt.close(fig)
         else:
             fig, ax = plt.subplots(figsize=(5, 4))
-            ax.text(0.5, 0.5, "No true sentiment labels found in dataset\nto construct Confusion Matrix.", color='#64748b', ha='center', va='center')
+            ax.text(0.5, 0.5, "No true sentiment/rating labels found\nin dataset to construct Confusion Matrix.", color='#64748b', ha='center', va='center')
             fig.patch.set_facecolor('#0a0a0a')
             ax.set_facecolor('#14161a')
             plt.tight_layout()
